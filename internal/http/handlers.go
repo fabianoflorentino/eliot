@@ -62,7 +62,11 @@ func (s *Server) PostPayments(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	// Enqueue and return immediately — sub-10ms path
-	err = s.Stream.Enqueue(context.Background(), map[string]any{"correlationId": in.CorrelationID, "amount": in.Amount})
+	err = s.Stream.Enqueue(context.Background(), map[string]any{
+		"correlationId": in.CorrelationID,
+		"amount":        in.Amount,
+		"enqueuedAt":    core.NowUTCISO(),
+	})
 	if err != nil {
 		ctx.Error("server error", 500)
 		return
