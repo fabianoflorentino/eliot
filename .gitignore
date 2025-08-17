@@ -1,1 +1,14 @@
 **.json**
+
+# Build artifacts
+bin/
+tmp/
+
+# Development tools
+coverage.out
+coverage.html
+cpu.prof
+build-errors.log
+
+# Air (live reload)
+.air.toml
