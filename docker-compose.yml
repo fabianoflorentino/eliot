@@ -21,7 +21,7 @@ services:
 
   eliot1:
     build: .
-    image: fabianoflorentino/eliot:v0.0.1
+    image: fabianoflorentino/eliot:v0.0.2
     container_name: eliot-1
     hostname: eliot-1
     environment:
@@ -44,7 +44,7 @@ services:
       - rinha
 
   eliot2:
-    image: fabianoflorentino/eliot:v0.0.1
+    image: fabianoflorentino/eliot:v0.0.2
     container_name: eliot-2
     hostname: eliot-2
     environment:
