@@ -130,6 +130,14 @@ vet: ## Executa go vet
 .PHONY: check
 check: fmt vet lint test ## Executa todas as verificações (fmt, vet, lint, test)
 
+# Remove todas as imagens do projeto, incluindo sem tags
+.PHONY: docker-image-remove
+docker-image-remove: ## Remove imagens Docker do projeto (com e sem tags)
+	@echo "$(YELLOW)Removendo imagens Docker do projeto...$(NC)"
+	@docker images --filter=reference='$(DOCKER_IMAGE)*' -q | xargs -r docker rmi -f
+	@docker images -f "dangling=true" -q | xargs -r docker rmi -f
+	@echo "$(GREEN)Imagens removidas!$(NC)"
+
 .PHONY: docker-build
 docker-build: ## Constrói a imagem Docker
 	@echo "$(YELLOW)Construindo imagem Docker...$(NC)"
