@@ -45,9 +45,6 @@ func (w *Worker) loop(ctx context.Context, consumer string) {
 			log.Println("xreadgroup", err)
 			continue
 		}
-		if len(msgs) == 0 {
-			continue
-		}
 		ackIDs := make([]string, 0, len(msgs))
 		for _, m := range msgs {
 			var j Job

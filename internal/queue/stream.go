@@ -47,3 +47,21 @@ func (s *Stream) Read(ctx context.Context, consumer string, count int64, blockDu
 func (s *Stream) Ack(ctx context.Context, ids ...string) error {
 	return s.R.XAck(ctx, StreamKey, GroupName, ids...).Err()
 }
+
+// ReadPending lê mensagens pendentes do grupo para o consumidor
+func (s *Stream) ReadPending(ctx context.Context, consumer string, count int64) ([]redis.XMessage, error) {
+	res, err := s.R.XReadGroup(ctx, &redis.XReadGroupArgs{
+		Group:    GroupName,
+		Consumer: consumer,
+		Streams:  []string{StreamKey, "0"},
+		Count:    count,
+		Block:    0,
+	}).Result()
+	if err != nil {
+		return nil, err
+	}
+	if len(res) == 0 {
+		return nil, nil
+	}
+	return res[0].Messages, nil
+}
