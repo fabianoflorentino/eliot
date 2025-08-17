@@ -32,7 +32,7 @@ type Worker struct {
 }
 
 func (w *Worker) Run(ctx context.Context, concurrency int) {
-	consumer := time.Now().Format("150405.000")
+	consumer := time.Now().Format(time.RFC3339)
 	for i := range concurrency {
 		go w.loop(ctx, consumer+"-"+strconv.Itoa(i))
 	}
@@ -48,20 +48,24 @@ func (w *Worker) loop(ctx context.Context, consumer string) {
 		if len(msgs) == 0 {
 			continue
 		}
-		ids := make([]string, 0, len(msgs))
+		ackIDs := make([]string, 0, len(msgs))
 		for _, m := range msgs {
-			ids = append(ids, m.ID)
 			var j Job
 			if err := mapToStruct(m.Values, &j); err != nil {
 				continue
 			}
-			w.process(ctx, j)
+			if w.process(ctx, j) {
+				ackIDs = append(ackIDs, m.ID)
+			}
 		}
-		_ = w.Stream.Ack(ctx, ids...)
+		if len(ackIDs) > 0 {
+			_ = w.Stream.Ack(ctx, ackIDs...)
+		}
 	}
 }
 
-func (w *Worker) process(ctx context.Context, j Job) {
+// Retorna true se o processamento foi bem-sucedido, false caso contrário
+func (w *Worker) process(ctx context.Context, j Job) bool {
 	hd, _ := w.DefHC.Get(ctx)
 	hf, _ := w.FalHC.Get(ctx)
 	primaryURL, primaryLabel := w.DefURL, string(core.DefaultProcessor)
@@ -77,7 +81,7 @@ func (w *Worker) process(ctx context.Context, j Job) {
 	if !res.OK {
 		res2 := w.Client.Send(ctx, backupURL, body)
 		if !res2.OK {
-			return
+			return false
 		}
 		primaryLabel = backupLabel
 	}
@@ -95,6 +99,7 @@ func (w *Worker) process(ctx context.Context, j Job) {
 	}
 
 	_ = w.Store.Aggregation(ctx, primaryLabel, aggTime, j.Amount)
+	return true
 }
 
 func mapToStruct(m map[string]any, j *Job) error {
