@@ -33,7 +33,7 @@ type Worker struct {
 
 func (w *Worker) Run(ctx context.Context, concurrency int) {
 	consumer := time.Now().Format("150405.000")
-	for i := 0; i < concurrency; i++ {
+	for i := range concurrency {
 		go w.loop(ctx, consumer+"-"+strconv.Itoa(i))
 	}
 }
