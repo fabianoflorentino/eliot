@@ -12,3 +12,5 @@ build-errors.log
 
 # Air (live reload)
 .air.toml
+**.env**
+!.env.example
