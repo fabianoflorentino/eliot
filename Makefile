@@ -187,7 +187,7 @@ redis-stop: ## Para Redis local
 k6-test: ## Executa testes de carga com k6
 	@echo "$(YELLOW)Executando testes k6...$(NC)"
 	@if command -v k6 > /dev/null; then \
-		cd k6 && k6 run k6/rinha.js; \
+		k6 run ./k6/rinha.js; \
 	else \
 		echo "$(RED)k6 não encontrado. Instale o k6 para executar testes de carga$(NC)"; \
 	fi
