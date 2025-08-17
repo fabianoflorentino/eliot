@@ -147,18 +147,18 @@ docker-run: ## Executa o container Docker
 .PHONY: docker-compose-up
 docker-compose-up: ## Sobe todos os serviços com docker-compose
 	@echo "$(YELLOW)Subindo serviços com docker-compose...$(NC)"
-	docker-compose up -d
+	docker compose up -d
 	@echo "$(GREEN)Serviços iniciados!$(NC)"
 
 .PHONY: docker-compose-down
 docker-compose-down: ## Para todos os serviços do docker-compose
 	@echo "$(YELLOW)Parando serviços do docker-compose...$(NC)"
-	docker-compose down
+	docker compose down
 	@echo "$(GREEN)Serviços parados!$(NC)"
 
 .PHONY: docker-compose-logs
 docker-compose-logs: ## Mostra logs dos serviços
-	docker-compose logs -f
+	docker compose logs -f
 
 .PHONY: docker-compose-restart
 docker-compose-restart: docker-compose-down docker-build docker-compose-up ## Reinicia todos os serviços
@@ -187,7 +187,7 @@ redis-stop: ## Para Redis local
 k6-test: ## Executa testes de carga com k6
 	@echo "$(YELLOW)Executando testes k6...$(NC)"
 	@if command -v k6 > /dev/null; then \
-		cd k6 && k6 run rinha.js; \
+		cd k6 && k6 run k6/rinha.js; \
 	else \
 		echo "$(RED)k6 não encontrado. Instale o k6 para executar testes de carga$(NC)"; \
 	fi
