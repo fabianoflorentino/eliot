@@ -144,6 +144,12 @@ docker-build: ## Constrói a imagem Docker
 	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
 	@echo "$(GREEN)Imagem Docker construída: $(DOCKER_IMAGE):$(DOCKER_TAG)$(NC)"
 
+.PHONY: docker-push
+docker-push: docker-build ## Envia a imagem Docker para o repositório
+	@echo "$(YELLOW)Enviando imagem Docker para o repositório...$(NC)"
+	@docker push $(DOCKER_IMAGE):$(DOCKER_TAG) || { echo "$(RED)Falha ao enviar imagem Docker!$(NC)"; exit 1; }
+	echo "$(GREEN)Imagem Docker enviada: $(DOCKER_IMAGE):$(DOCKER_TAG)$(NC)"
+
 .PHONY: docker-run
 docker-run: ## Executa o container Docker
 	@echo "$(YELLOW)Executando container Docker...$(NC)"
