@@ -5,7 +5,7 @@ BINARY_NAME=eliot
 MAIN_PATH=./cmd/eliot
 BUILD_DIR=./bin
 DOCKER_IMAGE=fabianoflorentino/eliot
-DOCKER_TAG=v0.0.1
+DOCKER_TAG=v0.0.2
 GO_VERSION=1.24
 
 # Cores para output
@@ -170,6 +170,26 @@ docker-compose-logs: ## Mostra logs dos serviços
 
 .PHONY: docker-compose-restart
 docker-compose-restart: docker-compose-down docker-build docker-compose-up ## Reinicia todos os serviços
+
+.PHONY: docker-compose-retest
+docker-compose-retest: delete-partial-results \
+	docker-compose-down docker-image-remove docker-build \
+	docker-compose-up k6-test show-partial-results ## Reinicia todos os serviços e executa os testes de carga
+
+.PHONY: delete-partial-results
+delete-partial-results: ## Remove resultados parciais
+	@echo "$(YELLOW)Removendo resultados parciais...$(NC)"
+	@rm -f partial-results.json
+	@echo "$(GREEN)Resultados parciais removidos!$(NC)"
+
+.PHONY: show-partial-results
+show-partial-results: ## Mostra resultados parciais
+	@echo "$(YELLOW)Resultados parciais...$(NC)"
+	@if [ -f partial-results.json ]; then \
+		jq . partial-results.json; \
+	else \
+		echo "$(RED)Resultados parciais não encontrados!$(NC)"; \
+	fi
 
 .PHONY: redis-start
 redis-start: ## Inicia Redis localmente
