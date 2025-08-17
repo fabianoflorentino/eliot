@@ -1,14 +1,15 @@
 services:
   haproxy:
-    image: haproxy:2.9-alpine
-    container_name: rinha-haproxy
+    image: haproxy:3.1.8-alpine3.22
+    container_name: eliot-haproxy
+    hostname: eliot-haproxy
     ports:
       - "9999:9999"
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
-      - web1
-      - web2
+      - eliot1
+      - eliot2
     deploy:
       resources:
         limits:
@@ -16,11 +17,13 @@ services:
           memory: "40MB"
     networks:
       - payment-processor
-      - default
+      - rinha
 
-  web1:
+  eliot1:
     build: .
     image: fabianoflorentino/eliot:v0.0.1
+    container_name: eliot-1
+    hostname: eliot-1
     environment:
       HTTP_ADDR: ":8080"
       REDIS_ADDR: "redis:6379"
@@ -38,10 +41,12 @@ services:
           memory: "120MB"
     networks:
       - payment-processor
-      - default
+      - rinha
 
-  web2:
+  eliot2:
     image: fabianoflorentino/eliot:v0.0.1
+    container_name: eliot-2
+    hostname: eliot-2
     environment:
       HTTP_ADDR: ":8080"
       REDIS_ADDR: "redis:6379"
@@ -59,10 +64,12 @@ services:
           memory: "120MB"
     networks:
       - payment-processor
-      - default
+      - rinha
 
   redis:
-    image: redis:7-alpine
+    image: redis:alpine3.22
+    container_name: eliot-redis
+    hostname: eliot-redis
     command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
     deploy:
       resources:
@@ -70,10 +77,10 @@ services:
           cpus: "0.15"
           memory: "70MB"
     networks:
-      - default
+      - rinha
 
 networks:
-  default:
+  rinha:
   payment-processor:
     external: true
     name: payment-processor
