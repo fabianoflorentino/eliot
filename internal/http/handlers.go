@@ -35,8 +35,11 @@ func writeJSON(ctx *fasthttp.RequestCtx, status int, v any) {
 		return
 	}
 	b, _ := jsonFast.Marshal(v)
+
 	ctx.SetContentType("application/json")
-	ctx.Write(b)
+	if _, err := ctx.Write(b); err != nil {
+		return
+	}
 }
 
 func isUUID(s string) bool {
@@ -65,10 +68,6 @@ func (s *Server) PostPayments(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	writeJSON(ctx, fasthttp.StatusAccepted, map[string]string{"status": "queued"})
-}
-
-func (s *Server) persist(proc string, amount float64) {
-	_ = s.Store.Aggregation(context.Background(), proc, time.Now().UTC(), amount)
 }
 
 func (s *Server) GetPaymentsSummary(ctx *fasthttp.RequestCtx) {
