@@ -178,9 +178,9 @@ docker-compose-logs: ## Mostra logs dos serviços
 docker-compose-restart: docker-compose-down docker-build docker-compose-up ## Reinicia todos os serviços
 
 .PHONY: docker-compose-retest
-docker-compose-retest: delete-partial-results \
+docker-compose-retest: delete-partial-results \ ## Reinicia todos os serviços e executa os testes de carga
 	docker-compose-down docker-image-remove docker-build \
-	docker-compose-up k6-test show-partial-results ## Reinicia todos os serviços e executa os testes de carga
+	docker-compose-up k6-test show-partial-results 
 
 .PHONY: delete-partial-results
 delete-partial-results: ## Remove resultados parciais
@@ -314,3 +314,16 @@ release: clean check build docker-build ## Prepara release (clean, check, build,
 
 # Target padrão
 .DEFAULT_GOAL := help
+
+.PHONY: payment-processor-up
+payment-processor-up: ## Inicia os serviços payment-processor via docker-compose
+	@echo "Iniciando payment-processor..."
+	cd payment-processor && docker compose up -d && docker compose logs -f
+	@echo "payment-processor iniciado!"
+
+.PHONY: payment-processor-down
+payment-processor-down: ## Para os serviços payment-processor via docker-compose
+	@echo "Parando payment-processor..."
+	cd payment-processor && docker compose down --volumes --remove-orphans
+	@echo "payment-processor parado!"
+
