@@ -178,9 +178,7 @@ docker-compose-logs: ## Mostra logs dos serviços
 docker-compose-restart: docker-compose-down docker-build docker-compose-up ## Reinicia todos os serviços
 
 .PHONY: docker-compose-retest
-docker-compose-retest: delete-partial-results \ ## Reinicia todos os serviços e executa os testes de carga
-	docker-compose-down docker-image-remove docker-build \
-	docker-compose-up k6-test show-partial-results 
+docker-compose-retest: delete-partial-results docker-compose-down docker-image-remove docker-build docker-compose-up k6-test show-partial-results ## Reinicia todos os serviços e executa os testes de carga
 
 .PHONY: delete-partial-results
 delete-partial-results: ## Remove resultados parciais
